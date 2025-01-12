@@ -19,4 +19,10 @@
 </body>
 </html>
 
+//in form field
+
+<input type="hidden" name="floating_icon" value="0">
+<input type="checkbox" name="floating_icon" value="1" {{ $item->floating_icon == 1 ? 'checked' : '' }}>
+
+//in controller
 $data['floating_icon'] = isset($data['floating_icon']) ? $data['floating_icon'] : 0;
