@@ -1,72 +1,23 @@
-// script.js
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    let spans = $("#fun-container span");
+    let index = 0;
 
-const apiKey = 'YOUR_API_KEY'; // Replace with your OpenWeatherMap API key
-const weatherInfo = document.getElementById('weatherInfo');
-const fetchWeatherBtn = document.getElementById('fetchWeatherBtn');
-const locationInput = document.getElementById('locationInput');
+    // Hide all spans initially
+    spans.hide();
 
-// Function to get weather data by city name
-function getWeatherByCity(city) {
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`)
-        .then(response => response.json())
-        .then(data => displayWeather(data))
-        .catch(error => {
-            weatherInfo.innerHTML = `<p>Error fetching data. Please try again.</p>`;
-            console.error('Error fetching weather data:', error);
-        });
-}
-
-// Function to display weather data
-function displayWeather(data) {
-    if (data.cod !== 200) {
-        weatherInfo.innerHTML = `<p>Location not found. Please try another city.</p>`;
-        return;
+    function showNextSpan() {
+        $(spans[index])
+            .fadeIn(500) // Show the current span
+            .delay(4500) // Wait for 4.5 seconds
+            .fadeOut(500, function () {
+                index = (index + 1) % spans.length; // Increment index, loop back if needed
+                showNextSpan(); // Call the function for the next span
+            });
     }
 
-    const { name, main, weather } = data;
-    const temperature = main.temp;
-    const description = weather[0].description;
-    const humidity = main.humidity;
-    const windSpeed = data.wind.speed;
-
-    weatherInfo.innerHTML = `
-        <h2>Weather in ${name}</h2>
-        <p>Temperature: ${temperature}°C</p>
-        <p>Description: ${description}</p>
-        <p>Humidity: ${humidity}%</p>
-        <p>Wind Speed: ${windSpeed} m/s</p>
-    `;
-}
-
-// Function to get user's current location and fetch weather
-function getWeatherByLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-            const { latitude, longitude } = position.coords;
-            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`)
-                .then(response => response.json())
-                .then(data => displayWeather(data))
-                .catch(error => {
-                    weatherInfo.innerHTML = `<p>Error fetching data. Please try again.</p>`;
-                    console.error('Error fetching weather data:', error);
-                });
-        }, () => {
-            weatherInfo.innerHTML = `<p>Unable to get your location. Please enter a location manually.</p>`;
-        });
-    } else {
-        weatherInfo.innerHTML = `<p>Geolocation is not supported by this browser.</p>`;
-    }
-}
-
-// Event listeners
-fetchWeatherBtn.addEventListener('click', () => {
-    const city = locationInput.value.trim();
-    if (city) {
-        getWeatherByCity(city);
-    } else {
-        getWeatherByLocation();
-    }
+    // Start displaying spans
+    showNextSpan();
 });
-
-// Get weather by user's location on page load
-getWeatherByLocation();
+</script>
