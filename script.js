@@ -1,23 +1,14 @@
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function () {
-    let spans = $("#fun-container span");
-    let index = 0;
+  $response = file_get_contents(
+            "https://www.google.com/recaptcha/api/siteverify?secret=" . env('GOOGLE_RECAPTCHA_SECRETKEY') . "&response=" . $request['g-recaptcha-response'] . "&remoteip=" . $_SERVER['REMOTE_ADDR']
+        );
+        $response = json_decode($response);
+        if ($response->success === false) {
+            if(isset($response->score) && $response->score <= 0.4) {
+                //dd('spam detected'.$response->score);
+                Alert::error('Error', 'Failed to validate Google Recaptcha, Please try again!');
+            }
+            Alert::error('Error', 'Failed to validate Google Recaptcha, Please try again!');
+            return redirect()->route('index');
+        }
 
-    // Hide all spans initially
-    spans.hide();
-
-    function showNextSpan() {
-        $(spans[index])
-            .fadeIn(500) // Show the current span
-            .delay(4500) // Wait for 4.5 seconds
-            .fadeOut(500, function () {
-                index = (index + 1) % spans.length; // Increment index, loop back if needed
-                showNextSpan(); // Call the function for the next span
-            });
-    }
-
-    // Start displaying spans
-    showNextSpan();
-});
-</script>
+landbooking controller
